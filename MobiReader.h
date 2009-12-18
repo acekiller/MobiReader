@@ -42,6 +42,15 @@ public:
 	MobiReader(QWidget *parent = 0);
     ~MobiReader();
 
+public slots:
+	void on_myLineEdit_textEdited();
+	void on_radio1_clicked(bool);
+	void on_radio2_clicked(bool);
+	void on_myButton_clicked(bool);
+
+protected:
+	void setLabelChoise(int choise);
+	
 private:
     Ui::MobiReaderClass ui;
 };

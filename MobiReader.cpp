@@ -32,7 +32,6 @@
 #include <QLabel>
 #include <QRadioButton>
 #include <QString>
-#include <QMessageBox>
 
 #include "MobiReader.h"
 
@@ -62,6 +61,5 @@ void MobiReader::on_radio2_clicked(bool) {
 }
 
 void MobiReader::on_myButton_clicked(bool) {
-    QMessageBox::about(this, tr("About my MobiReader"), tr("Some copyright notices"));
     book.readBook("/home/patryk/FBooks/Arthur Conan Doyle_The Sign of the Four_().mobi");
 }

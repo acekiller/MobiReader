@@ -20,9 +20,13 @@ signals:
 public slots:
 
 private:
-    QFile file;
-    PdbHeader header;
-    PdbStream stream;
+    QFile m_file;
+    PdbHeader m_header;
+    PdbStream m_stream;
+    quint16 m_compression;
+    quint32 m_wholeTextLen;
+    quint16 m_numOfBookRecords;
+    quint16 m_maxRecordSize;
 
 };
 

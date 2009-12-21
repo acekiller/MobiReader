@@ -1,28 +1,43 @@
+#include <QMessageBox>
 #include <QString>
 
 #include "MobiBook.h"
 
-MobiBook::MobiBook(QObject *parent) :
-    QObject(parent) {
+MobiBook::MobiBook(QObject *parent)
+: QObject(parent), m_compression(0), m_wholeTextLen(0), m_numOfBookRecords(0),
+m_maxRecordSize(0) {
 }
 
 MobiBook::MobiBook(QString fileName, QObject *parent)
-: QObject(parent) {
+: QObject(parent), m_compression(0) {
     readBook(fileName);
 }
 
 bool MobiBook::readBook(QString fileName) {
-    file.setFileName(fileName);
-    if(!file.open(QIODevice::ReadOnly))
+    m_file.setFileName(fileName);
+    if(!m_file.open(QIODevice::ReadOnly))
         return false;
 
-    stream.setDevice(&file);
+    m_stream.setDevice(&m_file);
 
-    QByteArray name;
-    name.resize(32);
+    m_header.read(m_stream);
+    m_file.seek(m_header.recordsOffsets()[0]);
+    m_stream >> m_compression;
+    m_stream.skipRawData(2);
 
-    if(32 != stream.readRawData(name.data(), 32))
-        return false;
+    m_stream >> m_wholeTextLen;
+    m_stream >> m_numOfBookRecords;
+    m_stream >> m_maxRecordSize;
+
+    if(m_header.id() == "BOOKMOBI") {
+        quint16 encrypted;
+        m_stream >> encrypted;
+        if(encrypted) {
+            QMessageBox::critical(0, tr("DRM error"), tr("DRM-encrypted books are not supported"));
+        }
+    }
+
+    m_file.close();
 
     return true;
 }

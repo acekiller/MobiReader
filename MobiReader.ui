@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>MobiReaderClass</class>
- <widget class="QMainWindow" name="MobiReaderClass" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MobiReaderClass">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,69 +10,72 @@
     <height>563</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget" >
-   <layout class="QVBoxLayout" name="verticalLayout" >
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="myLabel" >
-      <property name="text" >
+     <widget class="QLabel" name="myLabel">
+      <property name="text">
        <string>Label to be updated by the controls</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="myLineEdit" />
+     <widget class="QLineEdit" name="myLineEdit"/>
     </item>
     <item>
-     <spacer name="verticalSpacer" >
-      <property name="orientation" >
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0" >
-       <size>
-        <width>20</width>
-        <height>376</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QRadioButton" name="radio1" >
-      <property name="text" >
+     <widget class="QRadioButton" name="radio1">
+      <property name="text">
        <string>Choose 1</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QRadioButton" name="radio2" >
-      <property name="text" >
+     <widget class="QRadioButton" name="radio2">
+      <property name="text">
        <string>Choose 2</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="myButton" >
-      <property name="text" >
+     <widget class="QWebView" name="bookView">
+      <property name="url">
+       <url>
+        <string>about:blank</string>
+       </url>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="myButton">
+      <property name="text">
        <string>Say it!</string>
       </property>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar" >
-   <property name="geometry" >
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>373</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

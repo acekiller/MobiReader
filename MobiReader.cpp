@@ -30,6 +30,7 @@
 
 #include <QLineEdit>
 #include <QLabel>
+#include <QMessageBox>
 #include <QRadioButton>
 #include <QString>
 
@@ -61,5 +62,9 @@ void MobiReader::on_radio2_clicked(bool) {
 }
 
 void MobiReader::on_myButton_clicked(bool) {
-    book.readBook("/home/patryk/FBooks/Arthur Conan Doyle_The Sign of the Four_().mobi");
+    if(!book.readBook("/home/patryk/FBooks/Arthur Conan Doyle_The Sign of the Four_().mobi")) {
+        QString errorMsg = QString(tr("Error processing eBook!! Error code: %d")).arg(book.errorCode());
+        QMessageBox::critical(this, tr("Error reading ebook"), errorMsg);
+    }
+    ui.bookView->setHtml(book.bookText());
 }

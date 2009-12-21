@@ -37,37 +37,31 @@
 #include "MobiReader.h"
 
 MobiReader::MobiReader(QWidget *parent)
-    : QMainWindow(parent)
-{
-	ui.setupUi(this);
-	showMaximized();
+: QMainWindow(parent) {
+    ui.setupUi(this);
+    showMaximized();
 }
 
-MobiReader::~MobiReader()
-{
+MobiReader::~MobiReader() {
 
 }
 
-void MobiReader::on_myLineEdit_textEdited()
-{
-	ui.myLabel->setText(ui.myLineEdit->text());
+void MobiReader::on_myLineEdit_textEdited() {
+    ui.myLabel->setText(ui.myLineEdit->text());
 }
 
-void MobiReader::setLabelChoise(int choise)
-{
-	ui.myLabel->setText(QString(tr("Chosen %1")).arg(choise));
+void MobiReader::setLabelChoise(int choise) {
+    ui.myLabel->setText(QString(tr("Chosen %1")).arg(choise));
 }
-void MobiReader::on_radio1_clicked(bool)
-{
-	setLabelChoise(1);
+void MobiReader::on_radio1_clicked(bool) {
+    setLabelChoise(1);
 }
 
-void MobiReader::on_radio2_clicked(bool)
-{
-	setLabelChoise(2);
+void MobiReader::on_radio2_clicked(bool) {
+    setLabelChoise(2);
 }
 
-void MobiReader::on_myButton_clicked(bool)
-{
-	QMessageBox::about(this, tr("About my MobiReader"), tr("Some copyright notices"));
+void MobiReader::on_myButton_clicked(bool) {
+    QMessageBox::about(this, tr("About my MobiReader"), tr("Some copyright notices"));
+    book.readBook("/home/patryk/FBooks/Arthur Conan Doyle_The Sign of the Four_().mobi");
 }

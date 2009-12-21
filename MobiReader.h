@@ -33,6 +33,7 @@
 
 #include <QtGui/QMainWindow>
 #include "ui_MobiReader.h"
+#include "MobiBook.h"
 
 class MobiReader : public QMainWindow
 {
@@ -53,6 +54,7 @@ protected:
 	
 private:
     Ui::MobiReaderClass ui;
+    MobiBook book;
 };
 
 #endif // MOBIREADER_H

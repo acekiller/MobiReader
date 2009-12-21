@@ -33,8 +33,7 @@
 #include <QtGui>
 #include <QApplication>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     MobiReader w;
     w.show();

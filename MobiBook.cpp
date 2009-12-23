@@ -3,26 +3,6 @@
 
 #include "MobiBook.h"
 
-static unsigned char TOKEN_CODE[256] = {
-        0, 1, 1, 1,		1, 1, 1, 1,		1, 0, 0, 0,		0, 0, 0, 0,
-        0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,
-        0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,
-        0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,
-        0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,
-        0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,
-        0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,
-        0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,		0, 0, 0, 0,
-        3, 3, 3, 3,		3, 3, 3, 3,		3, 3, 3, 3,		3, 3, 3, 3,
-        3, 3, 3, 3,		3, 3, 3, 3,		3, 3, 3, 3,		3, 3, 3, 3,
-        3, 3, 3, 3,		3, 3, 3, 3,		3, 3, 3, 3,		3, 3, 3, 3,
-        3, 3, 3, 3,		3, 3, 3, 3,		3, 3, 3, 3,		3, 3, 3, 3,
-        2, 2, 2, 2,		2, 2, 2, 2,		2, 2, 2, 2,		2, 2, 2, 2,
-        2, 2, 2, 2,		2, 2, 2, 2,		2, 2, 2, 2,		2, 2, 2, 2,
-        2, 2, 2, 2,		2, 2, 2, 2,		2, 2, 2, 2,		2, 2, 2, 2,
-        2, 2, 2, 2,		2, 2, 2, 2,		2, 2, 2, 2,		2, 2, 2, 2,
-};
-
-
 MobiBook::MobiBook(QObject *parent)
 : QObject(parent), m_error(NO_ERROR), m_compression(0), m_wholeTextLen(0),
 m_numOfBookRecords(0), m_maxRecordSize(0) {
@@ -59,61 +39,51 @@ bool MobiBook::readBook(QString fileName) {
     return true;
 }
 
-bool MobiBook::docDecompress(const QByteArray compressedBuffer) {
+bool MobiBook::docDecompress(const QByteArray &compressedBufferArray) {
+    const int buffSize = m_maxRecordSize * 2;
+    const int compressedBuffSize = compressedBufferArray.size();
     QByteArray buffer;
-    buffer.resize(m_maxRecordSize * 2);
+    buffer.resize(buffSize);
+    unsigned char token;
+    int srcIdx = 0;
+    int dstIdx = 0;
 
-    const char *srcBuff = compressedBuffer.data();
-    const char *srcBuffStart = srcBuff;
-    int srcBuffSize = compressedBuffer.size();
-    const char *srcBuffEnd = srcBuff + compressedBuffer.size() - 1; // last byte of src buffer
-    char *dstBuff = buffer.data();
-    char *dstBuffStart = dstBuff;
-    int dstBuffSize = buffer.size();
-    char * dstBuffEnd = dstBuff + buffer.size() - 1; // last byte of dst buffer
-    char token;
-    while(srcBuff < srcBuffEnd) {
-        token = *(srcBuff++);
+    while(srcIdx < compressedBuffSize) {
+        token = compressedBufferArray.at(srcIdx++);
 
-        switch(TOKEN_CODE[(unsigned char)token]) {
-        case 0:
-            *(dstBuff++) = token;
-            break;
-
-        case 1:
-            if((srcBuff + token > srcBuffEnd) || (dstBuff + token > dstBuffEnd))
+        if(0 == token || (8 < token && token < 128)) {
+            buffer[dstIdx++] = token;
+        } else if(0 < token && token < 9) {
+            if(srcIdx + token > compressedBuffSize)
                 return setErrorCode(COMPRESSION_ERROR);
 
-            memcpy(dstBuff, srcBuff, token);
-            srcBuff += token;
-            dstBuff += token;
-            break;
-
-        case 2:
-            if(dstBuff + 1 > dstBuffEnd)
+            for(unsigned short int i = 0; i < token; ++i)
+                buffer[dstIdx++] = compressedBufferArray.at(srcIdx++);
+        } else if(192 <= token) {
+            buffer[dstIdx++] = ' ';
+            buffer[dstIdx++] = 0x80 ^ token;
+        } else {
+            if(srcIdx + 1 > compressedBuffSize)
                 return setErrorCode(COMPRESSION_ERROR);
 
-            *(dstBuff++) = ' ';
-            *(dstBuff++) = 0x80 ^ token;
-            break;
-
-        case 3:
-            if(srcBuff + 1 > srcBuffEnd)
-                return setErrorCode(COMPRESSION_ERROR);
-
-            quint16 n = 0x100 * token + *(unsigned char *)(srcBuff++);
+            quint16 n = 0x100 * token + (unsigned char)compressedBufferArray.at(srcIdx++);
             quint16 copyLen = (n & 7) + 3;
-            if(dstBuff + copyLen > dstBuffEnd)
-                return setErrorCode(COMPRESSION_ERROR);
 
             quint16 shift = (n & 0x3fff) / 8;
-            char *shiftedSrcdBuff = dstBuff - shift;
-            memcpy(dstBuff, shiftedSrcdBuff, copyLen);
-            dstBuff += copyLen;
-            break;
+            int shiftedIdx = dstIdx - shift;
+
+            for(int tmpIdx = dstIdx; tmpIdx < shiftedIdx + 2 * copyLen; ++tmpIdx)
+                buffer[tmpIdx] = 0;
+
+            for(quint16 i = 0; i < copyLen; ++i) {
+                    buffer[dstIdx++] = buffer.at(shiftedIdx++);
+            }
+
         }
     }
 
+    // Truncate any possible additional bytes allocated by [] operator
+    buffer.resize(dstIdx);
     m_bookText += buffer;
 
     return true;
@@ -154,9 +124,9 @@ bool MobiBook::processRecord(int recordIndex) {
     if(recordIndex < m_header.recordsOffsets().size())
         size = m_header.recordsOffsets()[recordIndex + 2] - m_header.recordsOffsets()[recordIndex + 1];
 
-    buffer.resize(m_maxRecordSize);
+    buffer.resize(size);
 
-    if(size != m_stream.readRawData(buffer.data(), size))
+    if(size != m_file.read(buffer.data(), size))
         return setErrorCode(RECORD_PROCCESS_ERROR);
 
     switch(m_compression) {
@@ -167,7 +137,7 @@ bool MobiBook::processRecord(int recordIndex) {
 
     case 2:
         // Doc compression, no encryption
-        return docDecompress(buffer);
+        docDecompress(buffer);
         break;
 
     case 17480:

@@ -26,7 +26,7 @@ public:
     ~MobiBook();
     MobiBook(QString fileName, QObject *parent = 0);
     bool readBook(QString fileName);
-    bool docDecompress(const QByteArray compressedBuffer);
+    bool docDecompress(const QByteArray &compressedBufferArray);
     bool setErrorCode(MobiBookError error);
     const QString &bookText() const { return m_bookText; }
     MobiBookError errorCode() const { return m_error; }

@@ -33,6 +33,7 @@
 #include <QMessageBox>
 #include <QRadioButton>
 #include <QString>
+#include <QTextStream>
 
 #include "MobiReader.h"
 
@@ -62,8 +63,8 @@ void MobiReader::on_radio2_clicked(bool) {
 }
 
 void MobiReader::on_myButton_clicked(bool) {
-    if(!book.readBook("/home/patryk/FBooks/Arthur Conan Doyle_The Sign of the Four_().mobi")) {
-        QString errorMsg = QString(tr("Error processing eBook!! Error code: %d")).arg(book.errorCode());
+    if(!book.readBook("/home/patryk/kompilownia/An_Oblique_Approach.prc")) {
+        QString errorMsg = QString("Error processing eBook!! Error code: %1").arg(book.errorCode());
         QMessageBox::critical(this, tr("Error reading ebook"), errorMsg);
     }
     ui.bookView->setHtml(book.bookText());

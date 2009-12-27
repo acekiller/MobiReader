@@ -38,7 +38,7 @@
 #include "MobiReader.h"
 
 MobiReader::MobiReader(QWidget *parent)
-: QMainWindow(parent) {
+: QMainWindow(parent), first(true) {
     ui.setupUi(this);
     showMaximized();
 }
@@ -63,9 +63,16 @@ void MobiReader::on_radio2_clicked(bool) {
 }
 
 void MobiReader::on_myButton_clicked(bool) {
-    if(!book.readBook("/home/patryk/kompilownia/An_Oblique_Approach.prc")) {
-        QString errorMsg = QString("Error processing eBook!! Error code: %1").arg(book.errorCode());
-        QMessageBox::critical(this, tr("Error reading ebook"), errorMsg);
+    if(first) {
+        if(!book.readBook("/home/patryk/FBooks/Jules Verne_A Journey into the Interior of the Earth_(en).mobi")) {
+            QString errorMsg = QString("Error processing eBook!! Error code: %1").arg(book.errorCode());
+            QMessageBox::critical(this, tr("Error reading ebook"), errorMsg);
+        }
+        ui.bookView->setHtml(book.bookText());
+        first = false;
+    } else {
+        int wH = ui.bookView->size().height();
+        int vH = ui.bookView->viewport()->size().height();
+        qDebug("AAA");
     }
-    ui.bookView->setHtml(book.bookText());
 }

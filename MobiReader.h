@@ -55,6 +55,8 @@ protected:
 private:
     Ui::MobiReaderClass ui;
     MobiBook book;
+
+    bool first;
 };
 
 #endif // MOBIREADER_H

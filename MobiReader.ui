@@ -40,13 +40,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QWebView" name="bookView">
-      <property name="url">
-       <url>
-        <string>about:blank</string>
-       </url>
-      </property>
-     </widget>
+     <widget class="QTextEdit" name="bookView"/>
     </item>
     <item>
      <widget class="QPushButton" name="myButton">
@@ -63,19 +57,12 @@
      <x>0</x>
      <y>0</y>
      <width>373</width>
-     <height>23</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

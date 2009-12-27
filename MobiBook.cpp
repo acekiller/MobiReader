@@ -55,7 +55,7 @@ bool MobiBook::docDecompress(const QByteArray &compressedBufferArray) {
             buffer[dstIdx++] = token;
         } else if(0 < token && token < 9) {
             if(srcIdx + token > compressedBuffSize)
-                return setErrorCode(COMPRESSION_ERROR);
+                goto end_of_processing;
 
             for(unsigned short int i = 0; i < token; ++i)
                 buffer[dstIdx++] = compressedBufferArray.at(srcIdx++);
@@ -64,7 +64,7 @@ bool MobiBook::docDecompress(const QByteArray &compressedBufferArray) {
             buffer[dstIdx++] = 0x80 ^ token;
         } else {
             if(srcIdx + 1 > compressedBuffSize)
-                return setErrorCode(COMPRESSION_ERROR);
+                goto end_of_processing;
 
             quint16 n = 0x100 * token + (unsigned char)compressedBufferArray.at(srcIdx++);
             quint16 copyLen = (n & 7) + 3;
@@ -83,7 +83,7 @@ bool MobiBook::docDecompress(const QByteArray &compressedBufferArray) {
     }
 
     // Truncate any possible additional bytes allocated by [] operator
-    buffer.resize(dstIdx);
+    end_of_processing:    buffer.resize(dstIdx);
     m_bookText += buffer;
 
     return true;

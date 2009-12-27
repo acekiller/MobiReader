@@ -28,6 +28,7 @@
 **
 ****************************************************************************/
 
+#include <QFileDialog>
 #include <QLineEdit>
 #include <QLabel>
 #include <QMessageBox>
@@ -64,7 +65,10 @@ void MobiReader::on_radio2_clicked(bool) {
 
 void MobiReader::on_myButton_clicked(bool) {
     if(first) {
-        if(!book.readBook("/home/patryk/FBooks/Jules Verne_A Journey into the Interior of the Earth_(en).mobi")) {
+        int wH = ui.bookView->size().height();
+        int vH = ui.bookView->viewport()->size().height();
+        //if(!book.readBook("/home/patryk/FBooks/Jules Verne_A Journey into the Interior of the Earth_(en).mobi")) {
+        if(!book.readBook(QFileDialog::getOpenFileName(this, tr("Open")))) {
             QString errorMsg = QString("Error processing eBook!! Error code: %1").arg(book.errorCode());
             QMessageBox::critical(this, tr("Error reading ebook"), errorMsg);
         }

@@ -47,6 +47,11 @@ private:
     quint32 m_wholeTextLen;
     quint16 m_numOfBookRecords;
     quint16 m_maxRecordSize;
+
+    quint32 m_mobiHeaderLen;
+    quint32 m_mobiDocType;
+    quint32 m_mobiDocEncoding;
+
     QString m_bookText;
 };
 

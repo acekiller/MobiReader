@@ -1,11 +1,13 @@
 #include <QMessageBox>
 #include <QString>
+#include <QTextCodec>
 
 #include "MobiBook.h"
 
 MobiBook::MobiBook(QObject *parent)
 : QObject(parent), m_error(NO_ERROR), m_compression(0), m_wholeTextLen(0),
-m_numOfBookRecords(0), m_maxRecordSize(0) {
+m_numOfBookRecords(0), m_maxRecordSize(0), m_mobiHeaderLen(0),
+m_mobiDocType(0), m_mobiDocEncoding(0) {
 }
 
 MobiBook::MobiBook(QString fileName, QObject *parent)
@@ -30,11 +32,18 @@ bool MobiBook::readBook(QString fileName) {
     if(!processZeroRecord())
         return false;
 
+    if(m_mobiDocEncoding == 1252)
+        QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1252"));
+    else
+        QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+
     for(int i = 0; i < m_numOfBookRecords; ++i) {
         if(!processRecord(i)) {
             return false;
         }
     }
+
+    //m_bookText.remove(QRegExp("&lt; <p.*tbody&gt;"));
 
     return true;
 }
@@ -108,6 +117,19 @@ bool MobiBook::processZeroRecord() {
         m_stream >> encrypted;
         if(encrypted)
             return setErrorCode(DRM_ERROR);
+        QByteArray mobiIdArray("MOBI");
+        mobiIdArray.resize(5);
+        mobiIdArray[4] = 0;
+        QByteArray tmpArray;
+        tmpArray.resize(5);
+        m_stream.skipRawData(2);
+        m_stream.readRawData(tmpArray.data(), 4);
+        tmpArray[4] = 0;
+        if(tmpArray == mobiIdArray) {
+            m_stream >> m_mobiHeaderLen;
+            m_stream >> m_mobiDocType;
+            m_stream >> m_mobiDocEncoding;
+        }
     }
 
     return true;
